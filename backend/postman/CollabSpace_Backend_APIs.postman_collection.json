@@ -1,0 +1,1265 @@
+{
+  "info": {
+    "_postman_id": "8b51d5c5-c26d-4952-b883-74b8fb491f28",
+    "name": "CollabSpace Backend REST APIs",
+    "description": "Comprehensive API collection for CollabSpace real-time collaborative platform. Features Authentication, Workspace Management, Document Co-editing, Figma-style Board layouts, and Chat channels.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarti Verma\",\n  \"email\": \"aarti@example.com\",\n  \"password\": \"SecuredPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Registers a new user account and dispatches verification email link."
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"aarti@example.com\",\n  \"password\": \"SecuredPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Authenticates user credentials, sets httpOnly refresh token cookie, and returns short-lived access token."
+          }
+        },
+        {
+          "name": "Google OAuth Login Mock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"googleId\": \"11039495837395049385\",\n  \"email\": \"aarti@example.com\",\n  \"name\": \"Aarti Verma\",\n  \"avatar\": \"https://lh3.googleusercontent.com/a/avatar-placeholder\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/google",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "google"
+              ]
+            },
+            "description": "Signs in or registers a user automatically based on verified Google account attributes."
+          }
+        },
+        {
+          "name": "Refresh Access Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ]
+            },
+            "description": "Issues a new JWT access token using the refresh token."
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "logout"
+              ]
+            },
+            "description": "Clears httpOnly cookie sessions and logs user out."
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"aarti@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/forgot-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "forgot-password"
+              ]
+            },
+            "description": "Sends reset email containing a token link valid for 1 hour."
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"your_reset_token_here\",\n  \"newPassword\": \"NewSecurePass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/reset-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "reset-password"
+              ]
+            },
+            "description": "Submits a new password along with the reset token to update user credentials."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Workspaces",
+      "item": [
+        {
+          "name": "Create Workspace",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"SaaS Launch Workspace\",\n  \"slug\": \"saas-launch-workspace\",\n  \"description\": \"Workspace for collaborating on the SaaS design system, Figma boards, and spec files.\",\n  \"logo\": \"https://cdn-placeholder.com/logos/collabspace.png\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/workspaces",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "workspaces"
+              ]
+            },
+            "description": "Creates a new team workspace. Creator is assigned the Owner role."
+          }
+        },
+        {
+          "name": "Get Workspace Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/workspaces/{{workspaceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "workspaces",
+                "{{workspaceId}}"
+              ]
+            },
+            "description": "Fetches metadata and complete members list for a workspace."
+          }
+        },
+        {
+          "name": "Update Workspace",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"CollabSpace Production Team\",\n  \"description\": \"Updated description of the team workspace.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/workspaces/{{workspaceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "workspaces",
+                "{{workspaceId}}"
+              ]
+            },
+            "description": "Updates workspace name, description, or logo. Guarded by Owner/Admin role."
+          }
+        },
+        {
+          "name": "Delete Workspace",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/workspaces/{{workspaceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "workspaces",
+                "{{workspaceId}}"
+              ]
+            },
+            "description": "Deletes the workspace entirely. Only permitted for Workspace Owner."
+          }
+        },
+        {
+          "name": "Invite Workspace Member",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"collaborator@example.com\",\n  \"role\": \"Editor\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/workspaces/{{workspaceId}}/invite",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "workspaces",
+                "{{workspaceId}}",
+                "invite"
+              ]
+            },
+            "description": "Dispatches an invitation link to the specified collaborator."
+          }
+        },
+        {
+          "name": "Accept Invitation",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"your_invitation_token_here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/workspaces/accept-invite",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "workspaces",
+                "accept-invite"
+              ]
+            },
+            "description": "Adds the authenticated user to the workspace membership lists based on token."
+          }
+        },
+        {
+          "name": "Update Member Role",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"Admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/workspaces/{{workspaceId}}/members/{{memberUserId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "workspaces",
+                "{{workspaceId}}",
+                "members",
+                "{{memberUserId}}"
+              ]
+            },
+            "description": "Promotes or demotes workspace member's role permissions."
+          }
+        },
+        {
+          "name": "Remove Workspace Member",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/workspaces/{{workspaceId}}/members/{{memberUserId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "workspaces",
+                "{{workspaceId}}",
+                "members",
+                "{{memberUserId}}"
+              ]
+            },
+            "description": "Revokes a member's access from the workspace."
+          }
+        },
+        {
+          "name": "Get Workspace Activity Feed",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/workspaces/{{workspaceId}}/activity",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "workspaces",
+                "{{workspaceId}}",
+                "activity"
+              ]
+            },
+            "description": "Fetches audit trail logs of all events in the workspace."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Create Document",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workspaceId\": \"{{workspaceId}}\",\n  \"title\": \"Backend Spec Requirements\",\n  \"folder\": \"Specs\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/documents",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "documents"
+              ]
+            },
+            "description": "Creates a new rich-text document inside the workspace."
+          }
+        },
+        {
+          "name": "List Workspace Documents",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/documents?workspaceId={{workspaceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "documents"
+              ],
+              "query": [
+                {
+                  "key": "workspaceId",
+                  "value": "{{workspaceId}}"
+                }
+              ]
+            },
+            "description": "Lists all active documents belonging to the workspace (filters out trashed files)."
+          }
+        },
+        {
+          "name": "Get Document Details & Comments",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/documents/{{documentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "documents",
+                "{{documentId}}"
+              ]
+            },
+            "description": "Retrieves the document's content state along with its comments threads."
+          }
+        },
+        {
+          "name": "Update Document Metadata",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Backend Architecture v2\",\n  \"folder\": \"Architecture\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/documents/{{documentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "documents",
+                "{{documentId}}"
+              ]
+            },
+            "description": "Edits the title or folders of a document."
+          }
+        },
+        {
+          "name": "Soft Delete Document",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/documents/{{documentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "documents",
+                "{{documentId}}"
+              ]
+            },
+            "description": "Moves the document into the Trash bin (30-day soft recovery window)."
+          }
+        },
+        {
+          "name": "Get Document Version History",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/documents/{{documentId}}/versions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "documents",
+                "{{documentId}}",
+                "versions"
+              ]
+            },
+            "description": "Lists snapshots taken for version history."
+          }
+        },
+        {
+          "name": "Restore Historic Version",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/documents/{{documentId}}/restore/{{versionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "documents",
+                "{{documentId}}",
+                "restore",
+                "{{versionId}}"
+              ]
+            },
+            "description": "Restores the editor state to a target historical snapshot version."
+          }
+        },
+        {
+          "name": "Generate Sharing Link",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permission\": \"Commenter\",\n  \"password\": \"optionalPass123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/documents/{{documentId}}/share",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "documents",
+                "{{documentId}}",
+                "share"
+              ]
+            },
+            "description": "Generates a shareable URL token link with customizable access options."
+          }
+        },
+        {
+          "name": "Add Document Comment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"anchorRange\": {\n    \"index\": 12,\n    \"length\": 6\n  },\n  \"text\": \"Hey @Aarti, check if the JWT RS256 token is generated dynamically on start.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/documents/{{documentId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "documents",
+                "{{documentId}}",
+                "comments"
+              ]
+            },
+            "description": "Posts a comment anchored on a text range, scanning mentions to log alert notifications."
+          }
+        },
+        {
+          "name": "Update/Resolve Comment Thread",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resolved\": true,\n  \"replyText\": \"Understood, the key generator is completed!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/documents/{{documentId}}/comments/{{commentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "documents",
+                "{{documentId}}",
+                "comments",
+                "{{commentId}}"
+              ]
+            },
+            "description": "Marks a thread as resolved or replies to a comment."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Boards (Design Canvas)",
+      "item": [
+        {
+          "name": "Create Canvas Board",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workspaceId\": \"{{workspaceId}}\",\n  \"title\": \"SaaS Web Layout Board\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/boards",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boards"
+              ]
+            },
+            "description": "Creates an infinite-canvas board within the workspace."
+          }
+        },
+        {
+          "name": "List Workspace Boards",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/boards?workspaceId={{workspaceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boards"
+              ],
+              "query": [
+                {
+                  "key": "workspaceId",
+                  "value": "{{workspaceId}}"
+                }
+              ]
+            },
+            "description": "Lists all drawing boards under a workspace."
+          }
+        },
+        {
+          "name": "Get Board Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/boards/{{boardId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boards",
+                "{{boardId}}"
+              ]
+            },
+            "description": "Fetches a specific canvas board details including drawing coordinate objects arrays."
+          }
+        },
+        {
+          "name": "Update Board Title or Canvas Objects",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Board Title\",\n  \"objects\": [\n    {\n      \"id\": \"rect-1\",\n      \"type\": \"rect\",\n      \"left\": 100,\n      \"top\": 150,\n      \"width\": 200,\n      \"height\": 100,\n      \"fill\": \"#4F46E5\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/boards/{{boardId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boards",
+                "{{boardId}}"
+              ]
+            },
+            "description": "Updates board metadata or coordinates elements."
+          }
+        },
+        {
+          "name": "Delete Board",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/boards/{{boardId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boards",
+                "{{boardId}}"
+              ]
+            },
+            "description": "Deletes the board from the workspace database."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chat & Notifications",
+      "item": [
+        {
+          "name": "Post Channel Message",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workspaceId\": \"{{workspaceId}}\",\n  \"channelId\": \"general\",\n  \"text\": \"Hey team, welcome to our real-time workspace. Let me know if you can see my cursor pointer!\",\n  \"attachments\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/messages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "chat",
+                "messages"
+              ]
+            },
+            "description": "Dispatches a new channel chat message supporting markdown formats."
+          }
+        },
+        {
+          "name": "Get Channel Chat History",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/messages?workspaceId={{workspaceId}}&channelId=general",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "chat",
+                "messages"
+              ],
+              "query": [
+                {
+                  "key": "workspaceId",
+                  "value": "{{workspaceId}}"
+                },
+                {
+                  "key": "channelId",
+                  "value": "general"
+                }
+              ]
+            },
+            "description": "Retrieves the message logs history for the workspace channel."
+          }
+        },
+        {
+          "name": "Get My Active Notifications",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/notifications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "chat",
+                "notifications"
+              ]
+            },
+            "description": "Lists the authenticated user's notification feed."
+          }
+        },
+        {
+          "name": "Mark Specific Notification Read",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/notifications/{{notificationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "chat",
+                "notifications",
+                "{{notificationId}}"
+              ]
+            },
+            "description": "Marks a target notification as read."
+          }
+        },
+        {
+          "name": "Clear All Notifications",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/notifications/all",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "chat",
+                "notifications",
+                "all"
+              ]
+            },
+            "description": "Bulk updates all user's unread notifications to read status."
+          }
+        }
+      ]
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "your_access_token_jwt",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "your_refresh_token_jwt",
+      "type": "string"
+    },
+    {
+      "key": "workspaceId",
+      "value": "workspace_object_id_here",
+      "type": "string"
+    },
+    {
+      "key": "documentId",
+      "value": "document_object_id_here",
+      "type": "string"
+    },
+    {
+      "key": "boardId",
+      "value": "board_object_id_here",
+      "type": "string"
+    },
+    {
+      "key": "memberUserId",
+      "value": "user_id_to_promote_or_remove",
+      "type": "string"
+    },
+    {
+      "key": "versionId",
+      "value": "document_version_object_id",
+      "type": "string"
+    },
+    {
+      "key": "commentId",
+      "value": "comment_object_id",
+      "type": "string"
+    },
+    {
+      "key": "notificationId",
+      "value": "notification_object_id",
+      "type": "string"
+    }
+  ]
+}
