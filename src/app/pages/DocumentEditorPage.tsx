@@ -27,6 +27,7 @@ import {
   MoreHorizontal,
   MessageSquare,
   Check,
+  Folder,
   ArrowLeft,
   RotateCcw,
   Save,
@@ -68,6 +69,7 @@ export function DocumentEditorPage({ isSharedView = false }: { isSharedView?: bo
   const { workspace, user, setUser } = useApp();
 
   const [title, setTitle] = useState("");
+  const [folder, setFolder] = useState("");
   const [content, setContent] = useState("");
   const [showComments, setShowComments] = useState(true);
   const [showVersions, setShowVersions] = useState(false);
@@ -127,6 +129,7 @@ export function DocumentEditorPage({ isSharedView = false }: { isSharedView?: bo
           const docData = await documentApi.getByShareToken(id, shareToken);
           const doc = docData.document || docData;
           setTitle(doc.title || "Untitled Document");
+          setFolder(doc.folder || "");
           setContent(doc.content || "");
           revisionRef.current = doc.version || 0;
           setComments(docData.comments || []);
@@ -141,6 +144,7 @@ export function DocumentEditorPage({ isSharedView = false }: { isSharedView?: bo
       const docData = await documentApi.get(id);
       const doc = docData.document || docData;
       setTitle(doc.title || "Untitled Document");
+      setFolder(doc.folder || "");
       setContent(doc.content || "");
       revisionRef.current = doc.version || 0;
       setComments(docData.comments || []);
@@ -278,7 +282,7 @@ export function DocumentEditorPage({ isSharedView = false }: { isSharedView?: bo
   const handleTitleBlur = async () => {
     if (!id || !title) return;
     try {
-      await documentApi.updateMetadata(id, { title });
+      await documentApi.updateMetadata(id, { title, folder });
     } catch (err: any) {
       console.warn("Failed to auto-save title:", err);
     }
@@ -465,7 +469,7 @@ export function DocumentEditorPage({ isSharedView = false }: { isSharedView?: bo
     if (!id) return;
     setIsSaving(true);
     try {
-      await documentApi.save(id, { content }, shareToken);
+      await documentApi.save(id, { content, folder, title }, shareToken);
       toast.success("Document saved successfully! A new version snapshot has been recorded.");
       if (showVersions) {
         loadVersions();
@@ -795,6 +799,20 @@ export function DocumentEditorPage({ isSharedView = false }: { isSharedView?: bo
 
         {/* Editor Content Area */}
         <div className="flex-1 flex flex-col p-8 bg-card dark:bg-card/30">
+          <div className="flex items-center gap-2 mb-2 text-xs text-muted-foreground">
+            <Folder className="h-4 w-4 text-primary" />
+            <span className="font-medium">Folder:</span>
+            <input
+              type="text"
+              value={folder}
+              onChange={(e) => setFolder(e.target.value)}
+              onBlur={handleTitleBlur}
+              placeholder="No Folder (General)"
+              readOnly={isReadOnly}
+              className="bg-muted/40 hover:bg-muted/70 focus:bg-background border border-transparent focus:border-primary outline-none px-2 py-1 text-xs text-foreground font-medium rounded-lg transition-all w-48"
+            />
+          </div>
+
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}

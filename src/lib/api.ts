@@ -160,13 +160,13 @@ export const documentApi = {
   getPublic: (id: string, token: string) =>
     apiFetch(`/api/documents/public/${id}?token=${token}`),
 
-  create: (body: { title: string; workspaceId: string; content?: any }) =>
+  create: (body: { title: string; workspaceId: string; folder?: string; content?: any }) =>
     apiFetch("/api/documents", { method: "POST", body: JSON.stringify(body) }),
 
-  updateMetadata: (id: string, body: { title: string }) =>
+  updateMetadata: (id: string, body: { title?: string; folder?: string }) =>
     apiFetch(`/api/documents/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
 
-  save: (id: string, body: { content: string }, token?: string) =>
+  save: (id: string, body: { content?: string; folder?: string; title?: string }, token?: string) =>
     apiFetch(
       `/api/documents/${id}${token ? `?token=${token}` : ""}`,
       { method: "PATCH", body: JSON.stringify(body) }

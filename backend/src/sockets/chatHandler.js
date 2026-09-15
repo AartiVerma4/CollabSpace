@@ -14,6 +14,24 @@ export const registerChatHandlers = (io, socket) => {
     socket.to(room).emit('chat:message', message);
   });
 
+  // Broadcast live typing indicator
+  socket.on('chat:typing', ({ workspaceId, channelId, userName }) => {
+    const room = `chat:${workspaceId}`;
+    socket.to(room).emit('chat:typing', { channelId, userId: socket.user._id, userName });
+  });
+
+  // Broadcast stop typing
+  socket.on('chat:stop-typing', ({ workspaceId, channelId }) => {
+    const room = `chat:${workspaceId}`;
+    socket.to(room).emit('chat:stop-typing', { channelId, userId: socket.user._id });
+  });
+
+  // Broadcast message emoji reaction
+  socket.on('chat:reaction', ({ workspaceId, messageId, emoji, userId }) => {
+    const room = `chat:${workspaceId}`;
+    socket.to(room).emit('chat:reaction', { messageId, emoji, userId });
+  });
+
   // Client heartbeat to maintain presence online status
   socket.on('presence:heartbeat', ({ workspaceId }) => {
     presenceService.setUserHeartbeat(socket.id);

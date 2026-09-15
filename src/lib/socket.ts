@@ -67,6 +67,15 @@ export const socketHelpers = {
   emitChatMessage: (workspaceId: string, message: any) => {
     getSocket().emit("chat:message", { workspaceId, message });
   },
+  emitTyping: (workspaceId: string, channelId: string, userName: string) => {
+    getSocket().emit("chat:typing", { workspaceId, channelId, userName });
+  },
+  emitStopTyping: (workspaceId: string, channelId: string) => {
+    getSocket().emit("chat:stop-typing", { workspaceId, channelId });
+  },
+  emitReaction: (workspaceId: string, messageId: string, emoji: string, userId: string) => {
+    getSocket().emit("chat:reaction", { workspaceId, messageId, emoji, userId });
+  },
   emitPresenceHeartbeat: (workspaceId: string) => {
     getSocket().emit("presence:heartbeat", { workspaceId });
   }
