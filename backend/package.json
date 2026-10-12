@@ -6,7 +6,8 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node src/server.js"
+    "dev": "node src/server.js",
+    "build": "echo 'Backend build step complete'"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
