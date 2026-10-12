@@ -74,7 +74,8 @@ Thumbs.db
 *.sw?
 
 # Project-specific local storage / temp keys
-backend/src/config/keys.js
+.keys/
+backend/.keys/
 backend/keys/
 keys/
 private.key
