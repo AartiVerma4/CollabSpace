@@ -9,7 +9,12 @@ import { registerChatHandlers } from './chatHandler.js';
 export const initSockets = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: process.env.CLIENT_URL || 'http://localhost:5173',
+      origin: (origin, callback) => {
+        if (!origin || origin.endsWith('.vercel.app') || origin.includes('localhost') || origin === process.env.CLIENT_URL) {
+          return callback(null, true);
+        }
+        callback(null, true);
+      },
       methods: ['GET', 'POST'],
       credentials: true
     }
