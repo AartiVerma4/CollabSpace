@@ -7,6 +7,16 @@ import crypto from 'crypto';
 // key: token -> value: { userId, expiresAt }
 const resetTokens = new Map();
 
+// Helper: returns cookie options appropriate for the current environment.
+// In production (Render backend + Vercel frontend are different origins) we must use
+// sameSite=none + secure=true so the browser sends the cookie cross-origin.
+const cookieOptions = () => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+});
+
 export const register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
@@ -32,12 +42,7 @@ export const register = async (req, res, next) => {
     await emailService.sendVerificationEmail(user.email, user.name, verificationLink);
 
     // Set refresh token in httpOnly cookie
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-    });
+    res.cookie('refreshToken', refreshToken, cookieOptions());
 
     res.status(201).json({
       message: 'Registration successful. Verification email sent.',
@@ -75,12 +80,7 @@ export const login = async (req, res, next) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-    });
+    res.cookie('refreshToken', refreshToken, cookieOptions());
 
     // Log login audit details
     console.log(`User logged in: ${user.email} from IP: ${req.ip} at ${new Date().toISOString()}`);
@@ -131,12 +131,7 @@ export const googleOAuth = async (req, res, next) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000
-    });
+    res.cookie('refreshToken', refreshToken, cookieOptions());
 
     res.status(200).json({
       message: 'Google login successful',
@@ -247,12 +242,7 @@ export const googleOAuthCallback = async (req, res, next) => {
     const refreshToken = generateRefreshToken(user);
 
     // Step 5: Set refresh token as httpOnly cookie (secure session)
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-    });
+    res.cookie('refreshToken', refreshToken, cookieOptions());
 
     console.log(`Google OAuth login: ${user.email} at ${new Date().toISOString()}`);
 
@@ -301,7 +291,7 @@ export const logout = async (req, res, next) => {
     res.clearCookie('refreshToken', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
     });
     res.status(200).json({ message: 'Logout successful' });
   } catch (error) {
@@ -398,12 +388,7 @@ export const guestLogin = async (req, res, next) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-    });
+    res.cookie('refreshToken', refreshToken, cookieOptions());
 
     res.status(200).json({
       message: 'Guest login successful',

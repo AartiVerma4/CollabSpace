@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { authApi, workspaceApi, chatApi } from "../../lib/api";
+import { authApi, workspaceApi, chatApi, BASE_URL } from "../../lib/api";
 import { getSocket, disconnectSocket } from "../../lib/socket";
 
 export interface User {
@@ -97,7 +97,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         // Try refreshing if no token in local storage (silent refresh on refresh token cookie)
         try {
           // Trigger apiFetch to any route or just refresh endpoint directly to get accessToken
-          const refreshRes = await fetch("http://localhost:5000/api/auth/refresh", {
+          const refreshRes = await fetch(`${BASE_URL}/api/auth/refresh`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             credentials: "include"

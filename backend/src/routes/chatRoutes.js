@@ -10,6 +10,7 @@ router.get('/messages', authenticateJWT, requireWorkspaceRole([]), getMessages);
 
 // User notification endpoints
 router.get('/notifications', authenticateJWT, getNotifications);
+router.patch('/notifications/all', authenticateJWT, markNotificationRead); // clear all (must be before /:id)
 router.patch('/notifications/:id', authenticateJWT, markNotificationRead);
 
 export default router;
