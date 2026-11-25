@@ -1,4 +1,4 @@
-# CollabSpace — Real-time SaaS Collaboration Platform
+# CollabSpace — Real-time SaaS Collaboration Platfor
 
 > A production-ready, full-stack SaaS web application inspired by Notion, Slack, Figma, and Google Docs.
 
